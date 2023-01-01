@@ -1,8 +1,3 @@
-"""
-Created on Sat Feb  24 20:18:05 2019
-
-@author: Raneem
-"""
 import numpy
 import random
 import time

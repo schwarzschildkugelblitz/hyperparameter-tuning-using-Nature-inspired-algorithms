@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon May 16 14:19:49 2016
-
-@author: hossam
-"""
 import random
 import numpy
 import math

@@ -1,9 +1,20 @@
-def Walvet_transformation():
+import numpy as np
+import pywt 
+from pyEMD import EMD,EEMD,CEEMDAN
 
-def CEEMDAN():
 
-def EMD():
+def Walvet_transformation(signal,lev):
+    signal = np.sin(np.linspace(0, 10, 1000))
+    coeffs = pywt.wavedec(signal, 'db1', level=lev)
+    return coeffs
 
-def EEMD():
+def Ceemdan(signal):
+    ceemdan = CEEMDAN()
+    return ceemdan(signal)
 
-def EMD2D():
+def Emd(signal):
+    emd = EMD()
+    return emd(signal)
+def Eemd(signal):
+    eemd = EEMD()
+    return eemd(signal)

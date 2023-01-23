@@ -1,88 +1,97 @@
 import numpy
 import math
 import random
-import tensorflow as tf
+from tensorflow.keras.layers import LSTM
 
 
-def ELM_tune():
+# def ELM_tune():
+#     param_ranges = {
+#     'hidden_size': [32, 128],
+#     'activation': ['sigmoid', 'relu']
+#     }
+
+#     hidden_size, activation = parameters
+    
+#     # Convert the hyperparameter strings to the appropriate data types
+#     activation = eval(activation)
+    
+#     # Create and train the ELM model
+#     model = ELM(hidden_size=hidden_size, activation=activation)
+#     model.fit(X_train, y_train)
+    
+#     # Return the model's validation accuracy
+#     return model.score(X_val, y_val)
+
+# def SVM():
+
+# def FNN():
+
+def LSTM_tune(X_train,y_train,X_val, y_val, search_agent,Task):
     param_ranges = {
-    'hidden_size': [32, 128],
-    'activation': ['sigmoid', 'relu']
-    }
-
-    hidden_size, activation = parameters
-    
-    # Convert the hyperparameter strings to the appropriate data types
-    activation = eval(activation)
-    
-    # Create and train the ELM model
-    model = ELM(hidden_size=hidden_size, activation=activation)
-    model.fit(X_train, y_train)
-    
-    # Return the model's validation accuracy
-    return model.score(X_val, y_val)
-
-def SVM():
-
-def FNN():
-
-def LSTM_tune():
-    param_ranges = {
-    'num_epochs': [10, 50],
+    'num_epochs': [10, 100],
     'batch_size': [32, 256],
-    'optimizer': ['adam', 'sgd'],
     'learning_rate': [1e-3, 1e-1],
-    'hidden_size': [32, 128],
-    'num_layers': [1, 3],
+    'hidden_size': [32, 254],
+    'num_layers': [1, 6],
     'dropout': [0, 0.5]
-}
-    num_epochs, batch_size, optimizer, learning_rate, hidden_size, num_layers, dropout = parameters
-    
-    # Convert the hyperparameter strings to the appropriate data types
-    optimizer = eval(optimizer)
-    learning_rate = float(learning_rate)
-    hidden_size = int(hidden_size)
-    num_layers = int(num_layers)
+    }
+    if Task == "Regression":
+        Loss = 'RSME'
+        metric =["r_square","RSME","MAE"]
+    elif Task == "Binary_classification" :
+        Loss = 'binary_crossentropy'
+        metric =["accuracy","binary_crossentropy",tf.keras.metrics.Recall(),tf.keras.metrics.Precision(),"f1_score"]
+    else :
+        
+        Loss = 'categorical_crossentropy'
+        metric =["accuracy","categorical_crossentropy",tf.keras.metrics.Recall(),tf.keras.metrics.Precision(),"f1_score"]
+
+
+    num_epochs = search_agent[0]
+    batch_size = search_agent[1]
+    learning_rate = float(search_agent[2])
+    hidden_size = search_agent[3]
+    num_layers = int(search_agent[4])
     dropout = float(dropout)
-    
-    # Create and train the LSTM model
-    model = LSTM(hidden_size, num_layers, dropout=dropout)
-    model.compile(loss='binary_crossentropy', optimizer=optimizer(learning_rate), metrics=['RSME'])
+
+    model = Sequential()
+    model.add(LSTM(hidden_size, num_layers, dropout=dropout))
+    model.compile(loss= Loss, optimizer=Adam(learning_rate), metrics=metric)
     model.fit(X_train, y_train, batch_size=batch_size, epochs=num_epochs, validation_data=(X_val, y_val))
-    return model.evaluate(X_val, y_val)[1],
+    return model.evaluate(X_val, y_val),
 
-def GRNN_tune():
-    param_ranges = {
-    'sigma': [0.1, 1.0]
-    }
-    sigma = parameters
+# def GRNN_tune():
+#     param_ranges = {
+#     'sigma': [0.1, 1.0]
+#     }
+#     sigma = parameters
     
-    # Create and train the GRNN model
-    model = GRNN(sigma=sigma)
-    model.fit(X_train, y_train)
+#     # Create and train the GRNN model
+#     model = GRNN(sigma=sigma)
+#     model.fit(X_train, y_train)
     
-    # Return the model's validation accuracy
-    return model.score(X_val, y_val)
+#     # Return the model's validation accuracy
+#     return model.score(X_val, y_val)
 
 
-def SVM_tune():
-    param_ranges = {
-    'C': [0.1, 10.0],
-    'kernel': ['linear', 'rbf'],
-    'gamma': ['scale', 'auto']
-    }
-    C, kernel, gamma = parameters
+# def SVM_tune():
+#     param_ranges = {
+#     'C': [0.1, 10.0],
+#     'kernel': ['linear', 'rbf'],
+#     'gamma': ['scale', 'auto']
+#     }
+#     C, kernel, gamma = parameters
     
-    # Convert the hyperparameter strings to the appropriate data types
-    kernel = eval(kernel)
-    gamma = eval(gamma)
+#     # Convert the hyperparameter strings to the appropriate data types
+#     kernel = eval(kernel)
+#     gamma = eval(gamma)
     
-    # Create and train the SVM model
-    model = SVC(C=C, kernel=kernel, gamma=gamma)
-    model.fit(X_train, y_train)
+#     # Create and train the SVM model
+#     model = SVC(C=C, kernel=kernel, gamma=gamma)
+#     model.fit(X_train, y_train)
     
-    # Return the model's validation accuracy
-    return model.score(X_val, y_val)
+#     # Return the model's validation accuracy
+#     return model.score(X_val, y_val)
 
 
 def getFunctionDetails(a):

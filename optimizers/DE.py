@@ -7,26 +7,26 @@ from solution import solution
 # Differential Evolution (DE)
 # mutation factor = [0.5, 2]
 # crossover_ratio = [0,1]
-def DE(objf, lb, ub, dim, PopSize, iters):
+def DE(objf, lb, ub, dim, PopSize, iters,X_train, X_test, y_train, y_test):
 
     mutation_factor = 0.5
     crossover_ratio = 0.7
     stopping_func = None
 
     # convert lb, ub to array
-    if not isinstance(lb, list):
-        lb = [lb for _ in range(dim)]
-        ub = [ub for _ in range(dim)]
+    # if not isinstance(lb, list):
+    #     lb = [lb for _ in range(dim)]
+    #     ub = [ub for _ in range(dim)]
 
     # solution
     s = solution()
 
-    s.best = float("inf")
+    s.best = [float("inf")]
 
     # initialize population
     population = []
 
-    population_fitness = numpy.array([float("inf") for _ in range(PopSize)])
+    population_fitness = numpy.array([[float("inf"),0,0,0,0] for _ in range(PopSize)])
 
     for p in range(PopSize):
         sol = []
@@ -40,16 +40,16 @@ def DE(objf, lb, ub, dim, PopSize, iters):
 
     # calculate fitness for all the population
     for i in range(PopSize):
-        fitness = objf(population[i, :])
+        fitness = objf(population[i, :],X_train, X_test, y_train, y_test)
         population_fitness[p] = fitness
         # s.func_evals += 1
 
         # is leader ?
-        if fitness < s.best:
+        if fitness[0] < s.best[0]:
             s.best = fitness
             s.leader_solution = population[i, :]
 
-    convergence_curve = numpy.zeros(iters)
+    convergence_curve = numpy.zeros((iters,5))
     # start work
     print('DE is optimizing  "' + objf.__name__ + '"')
 
@@ -90,16 +90,16 @@ def DE(objf, lb, ub, dim, PopSize, iters):
             mutant_sol = numpy.clip(mutant_sol, lb, ub)
 
             # calc fitness
-            mutant_fitness = objf(mutant_sol)
+            mutant_fitness = objf(mutant_sol,X_train, X_test, y_train, y_test)
             # s.func_evals += 1
 
             # replace if mutant_fitness is better
-            if mutant_fitness < population_fitness[i]:
+            if mutant_fitness[0] < population_fitness[i][0]:
                 population[i, :] = mutant_sol
                 population_fitness[i] = mutant_fitness
 
                 # update leader
-                if mutant_fitness < s.best:
+                if mutant_fitness[0] < s.best[0]:
                     s.best = mutant_fitness
                     s.leader_solution = mutant_sol
 

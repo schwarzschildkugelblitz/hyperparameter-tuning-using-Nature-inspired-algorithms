@@ -5,21 +5,21 @@ from solution import solution
 import time
 
 
-def WOA(objf, lb, ub, dim, SearchAgents_no, Max_iter):
+def WOA(objf, lb, ub, dim, SearchAgents_no, Max_iter,X_train, X_test, y_train, y_test):
 
     # dim=30
     # SearchAgents_no=50
     # lb=-100
     # ub=100
     # Max_iter=500
-    if not isinstance(lb, list):
-        lb = [lb] * dim
-    if not isinstance(ub, list):
-        ub = [ub] * dim
+    # if not isinstance(lb, list):
+    #     lb = [lb] * dim
+    # if not isinstance(ub, list):
+    #     ub = [ub] * dim
 
     # initialize position vector and score for the leader
     Leader_pos = numpy.zeros(dim)
-    Leader_score = float("inf")  # change this to -inf for maximization problems
+    Leader_score = [float("inf")]  # change this to -inf for maximization problems
 
     # Initialize the positions of search agents
     Positions = numpy.zeros((SearchAgents_no, dim))
@@ -29,7 +29,7 @@ def WOA(objf, lb, ub, dim, SearchAgents_no, Max_iter):
         )
 
     # Initialize convergence
-    convergence_curve = numpy.zeros(Max_iter)
+    convergence_curve = numpy.zeros((Max_iter,5))
 
     ############################
     s = solution()
@@ -53,10 +53,10 @@ def WOA(objf, lb, ub, dim, SearchAgents_no, Max_iter):
                 Positions[i, j] = numpy.clip(Positions[i, j], lb[j], ub[j])
 
             # Calculate objective function for each search agent
-            fitness = objf(Positions[i, :])
+            fitness = objf(Positions[i, :],X_train, X_test, y_train, y_test)
 
             # Update the leader
-            if fitness < Leader_score:  # Change this to > for maximization problem
+            if fitness[0] < Leader_score[0]:  # Change this to > for maximization problem
                 Leader_score = fitness
                 # Update alpha
                 Leader_pos = Positions[

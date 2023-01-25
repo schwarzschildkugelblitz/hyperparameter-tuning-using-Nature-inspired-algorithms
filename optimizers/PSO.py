@@ -5,7 +5,7 @@ from solution import solution
 import time
 
 
-def PSO(objf, lb, ub, dim, PopSize, iters):
+def PSO(objf, lb, ub, dim, PopSize, iters,X_train, X_test, y_train, y_test):
 
     # PSO parameters
 
@@ -16,28 +16,28 @@ def PSO(objf, lb, ub, dim, PopSize, iters):
     c2 = 2
 
     s = solution()
-    if not isinstance(lb, list):
-        lb = [lb] * dim
-    if not isinstance(ub, list):
-        ub = [ub] * dim
+    # if not isinstance(lb, list):
+    #     lb = [lb] * dim
+    # if not isinstance(ub, list):
+    #     ub = [ub] * dim
 
     ######################## Initializations
 
     vel = numpy.zeros((PopSize, dim))
 
     pBestScore = numpy.zeros(PopSize)
-    pBestScore.fill(float("inf"))
+    pBestScore.fill([float("inf"),0,0,0,0])
 
     pBest = numpy.zeros((PopSize, dim))
     gBest = numpy.zeros(dim)
 
-    gBestScore = float("inf")
+    gBestScore = [float("inf")]
 
     pos = numpy.zeros((PopSize, dim))
     for i in range(dim):
         pos[:, i] = numpy.random.uniform(0, 1, PopSize) * (ub[i] - lb[i]) + lb[i]
 
-    convergence_curve = numpy.zeros(iters)
+    convergence_curve = numpy.zeros((iters,5))
 
     ############################################
     print('PSO is optimizing  "' + objf.__name__ + '"')
@@ -51,13 +51,13 @@ def PSO(objf, lb, ub, dim, PopSize, iters):
             for j in range(dim):
                 pos[i, j] = numpy.clip(pos[i, j], lb[j], ub[j])
             # Calculate objective function for each particle
-            fitness = objf(pos[i, :])
+            fitness = objf(pos[i, :],X_train, X_test, y_train, y_test)
 
-            if pBestScore[i] > fitness:
+            if pBestScore[i][0] > fitness[0]:
                 pBestScore[i] = fitness
                 pBest[i, :] = pos[i, :].copy()
 
-            if gBestScore > fitness:
+            if gBestScore[0] > fitness[0]:
                 gBestScore = fitness
                 gBest = pos[i, :].copy()
 

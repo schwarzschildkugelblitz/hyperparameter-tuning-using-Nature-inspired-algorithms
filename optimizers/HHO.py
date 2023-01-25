@@ -6,7 +6,7 @@ from solution import solution
 import time
 
 
-def HHO(objf, lb, ub, dim, SearchAgents_no, Max_iter):
+def HHO(objf, lb, ub, dim, SearchAgents_no, Max_iter,X_train, X_test, y_train, y_test):
 
     # dim=30
     # SearchAgents_no=50
@@ -16,11 +16,11 @@ def HHO(objf, lb, ub, dim, SearchAgents_no, Max_iter):
 
     # initialize the location and Energy of the rabbit
     Rabbit_Location = numpy.zeros(dim)
-    Rabbit_Energy = float("inf")  # change this to -inf for maximization problems
+    Rabbit_Energy = [float("inf")]  # change this to -inf for maximization problems
 
-    if not isinstance(lb, list):
-        lb = [lb for _ in range(dim)]
-        ub = [ub for _ in range(dim)]
+    # if not isinstance(lb, list):
+    #     lb = [lb for _ in range(dim)]
+    #     ub = [ub for _ in range(dim)]
     lb = numpy.asarray(lb)
     ub = numpy.asarray(ub)
 
@@ -30,7 +30,7 @@ def HHO(objf, lb, ub, dim, SearchAgents_no, Max_iter):
     )
 
     # Initialize convergence
-    convergence_curve = numpy.zeros(Max_iter)
+    convergence_curve = numpy.zeros((Max_iter,5))
 
     ############################
     s = solution()
@@ -52,10 +52,10 @@ def HHO(objf, lb, ub, dim, SearchAgents_no, Max_iter):
             X[i, :] = numpy.clip(X[i, :], lb, ub)
 
             # fitness of locations
-            fitness = objf(X[i, :])
+            fitness = objf(X[i, :],X_train, X_test, y_train, y_test)
 
             # Update the location of Rabbit
-            if fitness < Rabbit_Energy:  # Change this to > for maximization problem
+            if fitness[0] < Rabbit_Energy[0]:  # Change this to > for maximization problem
                 Rabbit_Energy = fitness
                 Rabbit_Location = X[i, :].copy()
 
@@ -126,7 +126,7 @@ def HHO(objf, lb, ub, dim, SearchAgents_no, Max_iter):
                     )
                     X1 = numpy.clip(X1, lb, ub)
 
-                    if objf(X1) < fitness:  # improved move?
+                    if objf(X1,X_train, X_test, y_train, y_test)[0] < fitness[0]:  # improved move?
                         X[i, :] = X1.copy()
                     else:  # hawks perform levy-based short rapid dives around the rabbit
                         X2 = (
@@ -136,7 +136,7 @@ def HHO(objf, lb, ub, dim, SearchAgents_no, Max_iter):
                             + numpy.multiply(numpy.random.randn(dim), Levy(dim))
                         )
                         X2 = numpy.clip(X2, lb, ub)
-                        if objf(X2) < fitness:
+                        if objf(X2,X_train, X_test, y_train, y_test)[0] < fitness[0]:
                             X[i, :] = X2.copy()
                 if (
                     r < 0.5 and abs(Escaping_Energy) < 0.5
@@ -147,7 +147,7 @@ def HHO(objf, lb, ub, dim, SearchAgents_no, Max_iter):
                     )
                     X1 = numpy.clip(X1, lb, ub)
 
-                    if objf(X1) < fitness:  # improved move?
+                    if objf(X1,X_train, X_test, y_train, y_test)[0] < fitness[0]:  # improved move?
                         X[i, :] = X1.copy()
                     else:  # Perform levy-based short rapid dives around the rabbit
                         X2 = (
@@ -157,7 +157,7 @@ def HHO(objf, lb, ub, dim, SearchAgents_no, Max_iter):
                             + numpy.multiply(numpy.random.randn(dim), Levy(dim))
                         )
                         X2 = numpy.clip(X2, lb, ub)
-                        if objf(X2) < fitness:
+                        if objf(X2,X_train, X_test, y_train, y_test)[0] < fitness[0]:
                             X[i, :] = X2.copy()
 
         convergence_curve[t] = Rabbit_Energy

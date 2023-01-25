@@ -29,7 +29,7 @@ from keras.utils import to_categorical
 
 # def FNN():
 
-def LSTM_( search_agent,X_train,X_val,y_train, y_val,Task="00",num_class=5):
+def LSTM_(search_agent,X_train,X_val,y_train, y_val,Task,num_class):
     # param_ranges = {
     # 'num_epochs': [10, 100],
     # 'batch_size': [32, 256],

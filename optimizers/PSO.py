@@ -25,13 +25,12 @@ def PSO(objf, lb, ub, dim, PopSize, iters,X_train, X_test, y_train, y_test):
 
     vel = numpy.zeros((PopSize, dim))
 
-    pBestScore = numpy.zeros(PopSize)
-    pBestScore.fill([float("inf"),0,0,0,0])
+    pBestScore =numpy.array([[float("inf"),0,0,0,0]]*PopSize)
 
     pBest = numpy.zeros((PopSize, dim))
     gBest = numpy.zeros(dim)
 
-    gBestScore = [float("inf")]
+    gBestScore = [float("inf"),0,0,0,0]
 
     pos = numpy.zeros((PopSize, dim))
     for i in range(dim):

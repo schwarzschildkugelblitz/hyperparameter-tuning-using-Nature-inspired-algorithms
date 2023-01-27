@@ -1,6 +1,6 @@
 import numpy as np
 import pywt 
-from pyEMD import EMD,EEMD,CEEMDAN
+from PyEMD import EMD,EEMD,CEEMDAN
 
 
 def Walvet_transformation(signal,lev):
